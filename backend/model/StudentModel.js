@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const StudentSchema = mongoose.Schema(
   {
-    joiningdate: String,
     name: String,
     class: String,
     school: String,
@@ -14,6 +13,6 @@ const StudentSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const StudentModel = mongoose.model("Student", StudentSchema);
+const StudentModel = mongoose.model("students", StudentSchema);
 
 module.exports = { StudentModel };

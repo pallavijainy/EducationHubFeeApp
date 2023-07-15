@@ -1,12 +1,33 @@
 const express = require("express");
 const { Connection } = require("./config/db");
 const { StudentModel } = require("./model/StudentModel");
-
+const cors = require("cors");
+const { PaymentModel } = require("./model/PaymentModel");
 const app = express();
 app.use(express.json());
+app.use(cors());
 
+//get all student data
 app.get("/", async (req, res) => {
-  res.send("pallavi");
+  try {
+    const data = await StudentModel.find();
+    res.send(data);
+  } catch (error) {
+    res.send({ msg: "something went wrong" });
+  }
+});
+
+//get student for payment
+app.get("/payment/:id", async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  try {
+    const studentdata = await StudentModel.findOne({ _id: id });
+    console.log(studentdata);
+    res.send(studentdata);
+  } catch (error) {
+    res.send({ msg: "something went wrong" });
+  }
 });
 
 //add student
@@ -21,11 +42,42 @@ app.post("/newstudentadd", async (req, res) => {
   }
 });
 
-//make payment
-app.post("/payment/:id", async (req, res) => {
+//payment
+app.post("/paid", async (req, res) => {
+  const { studentId, feepaid } = req.body;
+  try {
+    const newpaid = new PaymentModel({
+      student: studentId,
+      feepaid: feepaid,
+    });
+    await newpaid.save();
+    res.send(newpaid);
+  } catch (error) {
+    res.send({ msg: "something went wrong" });
+  }
+});
+
+//reciept page
+
+app.get("/reciept", async (req, res) => {
+  try {
+    const allpayment = await PaymentModel.find()
+      .populate("student", ["name", "due"])
+      .sort({ createdAt: -1 });
+    res.send(allpayment);
+  } catch (error) {
+    res.send({ msg: "something went wrong" });
+  }
+});
+
+//reciept of single person
+app.get("/reciept/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const studentdata = StudentModel.findOne({ _id: id });
+    const allpayment = await PaymentModel.find({ student: id })
+      .populate("student", ["name", "due"])
+      .sort({ createdAt: -1 });
+    res.send(allpayment);
   } catch (error) {
     res.send({ msg: "something went wrong" });
   }
