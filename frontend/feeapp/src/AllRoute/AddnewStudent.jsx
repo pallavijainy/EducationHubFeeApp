@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Input, Button } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ const AddnewStudent = () => {
 
   const onSubmit = (data) => {
     axios.post("http://localhost:8080/newstudentadd", data).then((res) => {
+      console.log(res.data);
       alert("new student added");
     });
   };
@@ -29,6 +30,8 @@ const AddnewStudent = () => {
         <Input placeholder="Mobile" {...register("mobile")} />
         <FormLabel>Parent Name</FormLabel>
         <Input placeholder="Parent Name" {...register("parentname")} />
+        <FormLabel>Due Amount</FormLabel>
+        <Input placeholder="Due Amount" {...register("due")} />
         <Input type="submit" />
       </FormControl>
     </form>

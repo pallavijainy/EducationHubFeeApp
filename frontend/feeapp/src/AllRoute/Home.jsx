@@ -64,7 +64,7 @@ const Home = () => {
                 <Td>{el.fee}</Td>
                 <Td>{el.mobile}</Td>
                 <Td>{el.parentname}</Td>
-                <Td>500</Td>
+                <Td>{el.due}</Td>
               </Tr>
             ))}
           </Tbody>

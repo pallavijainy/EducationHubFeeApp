@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Box, Button, Heading, Input } from "@chakra-ui/react";
 
 const PaymentPage = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [paid, setPaid] = useState({});
   const [amount, setAmount] = useState(0);
+  const [payment, setPayment] = useState(null);
   //   console.log(params.id);
   useEffect(() => {
     axios
@@ -22,14 +24,23 @@ const PaymentPage = () => {
     axios
       .post("http://localhost:8080/paid", { studentId: id, feepaid: amount })
       .then((res) => {
-        alert("payment successfully");
+        console.log(res.data, "daaaata");
+        setPayment(res.data);
+
         setAmount(0);
+      })
+      .then(() => {
+        alert("payment successfully");
       })
       .catch((err) => {
         console.log(err);
       });
   };
+  console.log(payment, "pay");
 
+  if (payment) {
+    navigate(`/done/${payment._id}`);
+  }
   return (
     <>
       <Box>

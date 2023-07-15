@@ -16,6 +16,21 @@ app.get("/", async (req, res) => {
     res.send({ msg: "something went wrong" });
   }
 });
+//get when payment done
+app.get("/getpaymentdetail/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const data = await PaymentModel.findOne({ _id: id }).populate("student", [
+      "name",
+      "due",
+      "fee",
+    ]);
+
+    res.send(data);
+  } catch (error) {
+    res.send({ msg: "something went wrong" });
+  }
+});
 
 //get student for payment
 app.get("/payment/:id", async (req, res) => {
@@ -57,14 +72,14 @@ app.post("/paid", async (req, res) => {
   }
 });
 
-//reciept page
+// Due Payment
 
-app.get("/reciept", async (req, res) => {
+app.patch("/due/:id", async (req, res) => {
+  const id = req.params.id;
+  const due = req.body;
   try {
-    const allpayment = await PaymentModel.find()
-      .populate("student", ["name", "due"])
-      .sort({ createdAt: -1 });
-    res.send(allpayment);
+    await StudentModel.findByIdAndUpdate({ _id: id }, due);
+    res.send("update");
   } catch (error) {
     res.send({ msg: "something went wrong" });
   }
