@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Box, Button, Heading, Input } from "@chakra-ui/react";
 
 const PaymentPage = () => {
   const params = useParams();
-  const navigate = useNavigate();
+
   const [paid, setPaid] = useState({});
   const [amount, setAmount] = useState(0);
   const [payment, setPayment] = useState(null);
+  const [finaldue, setFinalDue] = useState(paid?.due);
   //   console.log(params.id);
   useEffect(() => {
     axios
@@ -20,13 +21,26 @@ const PaymentPage = () => {
         console.log(err);
       });
   }, []);
+
+  useEffect(() => {
+    axios
+      .patch(`http://localhost:8080/due/${params.id}`, { due: finaldue })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [finaldue]);
+
   const handleSubmit = (id) => {
     axios
       .post("http://localhost:8080/paid", { studentId: id, feepaid: amount })
       .then((res) => {
-        console.log(res.data, "daaaata");
+        // console.log(res.data, "daaaata");
         setPayment(res.data);
-
+        setFinalDue(paid.due - amount);
+        console.log(paid.due - amount);
         setAmount(0);
       })
       .then(() => {
@@ -36,10 +50,10 @@ const PaymentPage = () => {
         console.log(err);
       });
   };
-  console.log(payment, "pay");
+  // console.log(payment, "pay");
 
   if (payment) {
-    navigate(`/done/${payment._id}`);
+    return <Navigate to={`/done/${payment._id}`} />;
   }
   return (
     <>

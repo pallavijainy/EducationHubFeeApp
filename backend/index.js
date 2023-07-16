@@ -72,7 +72,7 @@ app.post("/paid", async (req, res) => {
   }
 });
 
-// Due Payment
+// Due Payment update
 
 app.patch("/due/:id", async (req, res) => {
   const id = req.params.id;

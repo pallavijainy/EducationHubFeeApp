@@ -18,7 +18,7 @@ const Reciept = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [params.id]);
   return (
     <Box>
       {isrec.map((el) => (

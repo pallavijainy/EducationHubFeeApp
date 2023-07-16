@@ -9,11 +9,10 @@ import {
   Td,
   TableContainer,
   Heading,
-  Button,
 } from "@chakra-ui/react";
 
 import { format } from "date-fns";
-import { Link } from "react-router-dom";
+
 import Popup from "./../component/Popup";
 const Home = () => {
   const [isStudent, setIsStudent] = useState([]);
@@ -27,13 +26,13 @@ const Home = () => {
         console.log(err);
       });
   }, []);
-  const handleName = () => {};
+
   return (
     <>
-      <Heading>Student Data</Heading>
-      <Button>
-        <Link to={"/addnew"}>New Admission</Link>
-      </Button>
+      <Heading textDecoration="underline" textAlign={"center"}>
+        Student Data
+      </Heading>
+
       <TableContainer>
         <Table variant="simple">
           <Thead>
@@ -51,7 +50,7 @@ const Home = () => {
           </Thead>
           <Tbody>
             {isStudent.map((el, i) => (
-              <Tr>
+              <Tr key={el._id}>
                 <Td>{i + 1}.</Td>
 
                 <Td>

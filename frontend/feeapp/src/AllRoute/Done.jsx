@@ -23,28 +23,33 @@ const Done = () => {
     "Nov",
     "Dec",
   ];
-  const getData = async () => {
-    const res = axios.get(
-      `http://localhost:8080/getpaymentdetail/${params.id}`
-    );
-    return await res;
-  };
+
   useEffect(() => {
-    getData().then((res) => {
-      setData(res.data);
-    });
-    TillMonthFun();
-  }, []);
-  const TillMonthFun = async () => {
-    const Due_Month = data?.student?.due / data?.student?.fee;
+    axios
+      .get(`http://localhost:8080/getpaymentdetail/${params.id}`)
+      .then((res) => {
+        setData(res.data);
+      })
+
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [params.id]);
+
+  useEffect(() => {
+    // console.log(data, "pallavi");
+    const Due_Month =
+      (Number(data?.student?.due) + Number(data?.feepaid)) / data?.student?.fee;
+
     const Came_Month_fee = data?.feepaid / data?.student?.fee;
     const TotalDueMonth = Due_Month - Came_Month_fee;
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
-    console.log(montharr[currentMonth - TotalDueMonth]);
+    // console.log(montharr[currentMonth - TotalDueMonth]);
 
     setMonth(montharr[currentMonth - TotalDueMonth]);
-  };
+  }, [data]);
+
   return (
     <Box>
       <Heading>Name:- {data?.student?.name} </Heading>
