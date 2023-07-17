@@ -4,13 +4,29 @@ const { StudentModel } = require("./model/StudentModel");
 const cors = require("cors");
 const { PaymentModel } = require("./model/PaymentModel");
 const app = express();
+
+const { DueMiddleWare } = require("./Middleware/DueMiddleWare");
 app.use(express.json());
 app.use(cors());
 
+// Due Payment update
+
+app.patch("/due/:id", async (req, res) => {
+  const id = req.params.id;
+  const due = req.body;
+  try {
+    await StudentModel.findByIdAndUpdate({ _id: id }, due);
+    res.send("update");
+  } catch (error) {
+    res.send({ msg: "something went wrong" });
+  }
+});
+
 //get all student data
+app.use(DueMiddleWare);
 app.get("/", async (req, res) => {
   try {
-    const data = await StudentModel.find();
+    const data = await StudentModel.find().sort({ createdAt: -1 });
     res.send(data);
   } catch (error) {
     res.send({ msg: "something went wrong" });
@@ -67,19 +83,6 @@ app.post("/paid", async (req, res) => {
     });
     await newpaid.save();
     res.send(newpaid);
-  } catch (error) {
-    res.send({ msg: "something went wrong" });
-  }
-});
-
-// Due Payment update
-
-app.patch("/due/:id", async (req, res) => {
-  const id = req.params.id;
-  const due = req.body;
-  try {
-    await StudentModel.findByIdAndUpdate({ _id: id }, due);
-    res.send("update");
   } catch (error) {
     res.send({ msg: "something went wrong" });
   }

@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import Popup from "./../component/Popup";
 const Home = () => {
   const [isStudent, setIsStudent] = useState([]);
+
   useEffect(() => {
     axios
       .get("http://localhost:8080")
