@@ -5,9 +5,37 @@ const cors = require("cors");
 const { PaymentModel } = require("./model/PaymentModel");
 const app = express();
 
-const { DueMiddleWare } = require("./Middleware/DueMiddleWare");
 app.use(express.json());
 app.use(cors());
+
+let lastUpdatedMonth = -1;
+
+const updateDueOnceAMonth = async () => {
+  try {
+    const currentMonth = new Date().getMonth();
+
+    if (currentMonth !== lastUpdatedMonth) {
+      lastUpdatedMonth = currentMonth;
+      const currentDate = new Date().getDate();
+      const isStudent = await StudentModel.find();
+
+      isStudent.forEach(async (el) => {
+        // const joiningMonth = new Date(el.createdAt).getMonth();
+        const joiningDate = new Date(el.createdAt).getDate();
+
+        if (currentDate === joiningDate) {
+          const newDue = +el.due + +el.fee;
+          await StudentModel.findByIdAndUpdate(
+            { _id: el._id },
+            { due: newDue }
+          );
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error updating students:", error);
+  }
+};
 
 // Due Payment update
 
@@ -16,6 +44,7 @@ app.patch("/due/:id", async (req, res) => {
   const due = req.body;
   try {
     await StudentModel.findByIdAndUpdate({ _id: id }, due);
+
     res.send("update");
   } catch (error) {
     res.send({ msg: "something went wrong" });
@@ -23,8 +52,19 @@ app.patch("/due/:id", async (req, res) => {
 });
 
 //get all student data
-app.use(DueMiddleWare);
+
 app.get("/", async (req, res) => {
+  const now = new Date();
+  const timeUntilNextDay =
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) -
+    now;
+
+  // Schedule the updateDueOnceAMonth function to run every day at 12 AM
+  setTimeout(async () => {
+    await updateDueOnceAMonth(); // Run the function immediately
+    setInterval(updateDueOnceAMonth, 24 * 60 * 60 * 1000); // Run every 24 hours
+  }, timeUntilNextDay);
+
   try {
     const data = await StudentModel.find().sort({ createdAt: -1 });
     res.send(data);
@@ -32,6 +72,7 @@ app.get("/", async (req, res) => {
     res.send({ msg: "something went wrong" });
   }
 });
+
 //get when payment done
 app.get("/getpaymentdetail/:id", async (req, res) => {
   const id = req.params.id;

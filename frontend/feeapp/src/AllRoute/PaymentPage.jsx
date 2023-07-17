@@ -23,6 +23,7 @@ const PaymentPage = () => {
   }, []);
 
   useEffect(() => {
+    console.log("uppallavi");
     axios
       .patch(`http://localhost:8080/due/${params.id}`, { due: finaldue })
       .then((res) => {

@@ -18,14 +18,18 @@ const Home = () => {
   const [isStudent, setIsStudent] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080")
-      .then((res) => {
-        setIsStudent(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    console.log("Fetching student data...at mounting");
+    return () => {
+      console.log("demounting");
+      axios
+        .get("http://localhost:8080")
+        .then((res) => {
+          setIsStudent(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
   }, []);
 
   return (
